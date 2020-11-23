@@ -5,6 +5,13 @@ var renderer = initRender()
 // 添加坐标轴
 var axes = new THREE.AxesHelper(20)
 scene.add(axes)
+
+// var trackballControls = new THREE.TrackballControls(camera)
+var trackballControls = new THREE.OrbitControls(camera)
+trackballControls.rotateSpeed = 1.0
+trackballControls.zoomSpeed = 1.0
+trackballControls.panSpeed = 1.0
+
 var spotLight = addSpotLight(scene)
 var plane = addPlane(scene)
 var cube = addCube(scene)
@@ -22,10 +29,10 @@ var controlJump = {
 
 
 
-addEvent()
+// addEvent()
 
 addControl(controlJump)
-
+var clock = new THREE.Clock()
 renderScene()
 console.log(scene.children)     // 输出场景中所有的子对象
 /** 定义渲染函数，持续渲染，当浏览器跳转到其他页面时则不进行渲染 */
@@ -35,7 +42,8 @@ function renderScene() {
     sphere.position.y = 4 + (8 * Math.abs(Math.sin(step)))
     cube.rotation.x += 0.02
 
-    
+    var delta = clock.getDelta()
+    trackballControls.update(delta)
     stats.update()
     requestAnimationFrame(renderScene)      // 调用本身
     renderer.render(scene, camera);

@@ -1,0 +1,26 @@
+{
+  "name": "mywebgl",
+  "version": "1.0.0",
+  "description": "webgl",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djxc/myWebGL.git"
+  },
+  "author": "small dj",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djxc/myWebGL/issues"
+  },
+  "homepage": "https://github.com/djxc/myWebGL#readme",
+  "devDependencies": {
+    "webpack": "^5.6.0",
+    "webpack-cli": "^4.2.0"
+  }
+}

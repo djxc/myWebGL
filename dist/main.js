@@ -1,0 +1,1 @@
+(()=>{"use strict";var e,t;(t=document.getElementById("example"))?function(t){(e=t.getContext("2d"))?function(e){e.fillStyle="rgba(100, 100, 255, 0.3)",e.fillRect(120,10,150,150)}(e):console.log("Failed to get the rendering context for WebGL")}(t):console.log("Failed to retrieve the <canvas> element")})();
