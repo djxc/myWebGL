@@ -57,7 +57,7 @@
  * visible.
  */
 
-WebGLUtils = function () {
+let WebGLUtils = function () {
 
   /**
    * Creates the HTLM for a failure message

@@ -1,3 +1,5 @@
+import WebGLUtils from './webgl-utils';
+import WebGLDebugUtils from './webgl-debug';
 // cuon-utils.js (c) 2012 kanda and matsuda
 /**
  * Create a program object and make current
@@ -111,3 +113,5 @@ function getWebGLContext(canvas, opt_debug) {
 
   return gl;
 }
+
+export { getWebGLContext, initShaders }
