@@ -1,4 +1,4 @@
-import { hello } from './dj';
+import { hello, manualDrawPoints, drawMultiPoints } from './drawPoints';
 import { getWebGLContext, initShaders } from './lib/cuon-utils';
 
 
@@ -12,7 +12,6 @@ import { getWebGLContext, initShaders } from './lib/cuon-utils';
  * @LastEditor small dj
  * @LastEditTime 2020-11-21 11:12
  */
-// import "./src/index"
 
 var ctx;		// 定义画布上下文的全局变量
 main()
@@ -58,7 +57,8 @@ function testWebGL(canvas) {
     }
     // clearColor()
     // drawPoint2(ctx)
-    manualDrawPoints(canvas, ctx)
+    // manualDrawPoints(canvas, ctx)
+    drawMultiPoints(ctx)
 }
 
 // 利用canvas绘制一个矩形
@@ -131,63 +131,3 @@ function drawPoint2(ctx) {
     ctx.drawArrays(ctx.POINTS, 0, 1)
 }
 
-/**
- * **根据输入点的位置与大小绘制点**
- * @param {*} ctx webgl上下文
- * @param {float[]} point_position 点坐标
- * @param {float} point_size 点大小，浮点型
- */
-function draw_point(ctx, point_position, point_size) {
-    // 定点着色器
-    var VSHADER_SOURCE =
-        'attribute vec4 a_Position;\n' +
-        'attribute float a_PointSize;\n' +
-        'void main(){\n' +
-        ' gl_Position = a_Position;\n' +
-        ' gl_PointSize = a_PointSize;\n' +
-        '}\n'
-    // 片元着色器
-    var FSHADER_SOURCE =
-        'precision mediump float;\n' +
-        'uniform vec4 u_FragColor;\n' +
-        'void main() {\n' +
-        ' gl_FragColor = u_FragColor;\n' +
-        '}\n'
-    if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
-        console.log('Failed to initialize shaders')
-        return
-    }
-    var a_Position = ctx.getAttribLocation(ctx.program, 'a_Position');
-    var a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
-    var u_FragColor = ctx.getUniformLocation(ctx.program, 'u_FragColor');
-
-    if (a_Position < 0 || a_PointSize < 0) {
-        console.log("Failed to get the storage location of a_Position");
-        return
-    }
-    ctx.vertexAttrib3f(a_Position, point_position[0], point_position[1], point_position[2]);
-    ctx.vertexAttrib1f(a_PointSize, point_size);
-    ctx.uniform4f(u_FragColor, 0.2, 0.5, 0.6, 0.78);
-    // clearColor()
-    ctx.drawArrays(ctx.POINTS, 0, 1)
-}
-
-/**
- * **手动绘制点**  
- * 1、首先注册canvas点击事件，获取点的点的坐标，然后触发绘制点函数
- * @param {*} canvas 
- * @param {*} ctx 
- */
-function manualDrawPoints(canvas, ctx) {
-    canvas.onmousedown = function (ev) {
-        // 鼠标点的位置
-        let x = ev.clientX
-        let y = ev.clientY
-        // canvas画布的尺寸
-        let rect = ev.target.getBoundingClientRect()
-        let x_ = ((x - rect.left) - canvas.height / 2) / (canvas.height / 2);
-        let y_ = (rect.width / 2 - (y - rect.top)) / (canvas.width / 2);
-        console.log("djxc", ev.target, x, y, rect, [x_, y_])
-        draw_point(ctx, [x_, y_, 0.0], 5.0)
-    }
-}
