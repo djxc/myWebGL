@@ -9,3 +9,4 @@
 - 1、webpack安装`npm install webpack webpack-cli --save-dev`，由于webpack只在开发阶段使用，因此添加为dev。
 - 2、利用webpack打包，`npx webpack`，将src下的index.js文件打包输出到dist目录中
 - 3、webpack默认支持模块化，每一个文件都是一个模块
+

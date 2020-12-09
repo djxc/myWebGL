@@ -1,4 +1,4 @@
-import { hello, manualDrawPoints, drawMultiPoints } from './drawPoints';
+import { manualDrawPoints, drawMultiPoints } from './drawPoints';
 import { getWebGLContext, initShaders } from './lib/cuon-utils';
 
 
@@ -67,7 +67,11 @@ function drawR(ctx) {
     ctx.fillRect(120, 10, 150, 150)
 }
 
-// webgl清空<canvas>的颜色
+/**
+ * **webgl清空<canvas>的颜色**  
+ * 1、首先指定背景色  
+ * 2、清空颜色缓冲区，然后canvas中显示即为设定的背景色
+ */
 function clearColor() {
     ctx.clearColor(0.0, 1.0, 0.0, 0.2)
     ctx.clear(ctx.COLOR_BUFFER_BIT)
@@ -75,26 +79,30 @@ function clearColor() {
 
 /**
  * **绘制点**  
+ * 1、webgl图形绘制依赖着色器机制，因此需要先创建着色器。着色器语言类似于c语言
  * 1、顶点着色器与片元着色器；点的绘制在着色器中操作
  * @param {webgl上下文} ctx 
  */
 function drawPoint(ctx) {
-    // 定点着色器
+    // 定点着色器，在程序中规定了点的位置以及点的大小。
     var VSHADER_SOURCE =
         'void main(){\n' +
         ' gl_Position = vec4(0.5, 0.0, 0.0, 1.0);\n' +
         ' gl_PointSize = 10.0;\n' +
         '}\n'
-    // 片元着色器
+    // 片元着色器，在程序中规定了点的颜色
     var FSHADER_SOURCE =
         'void main() {\n' +
         ' gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
         '}\n'
+    // 初始化着色器
     if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders')
         return
     }
+    // 清空颜色
     clearColor()
+    // 绘制新的图形
     ctx.drawArrays(ctx.POINTS, 0, 1)
 }
 

@@ -9,9 +9,6 @@
 
 import { initShaders } from './lib/cuon-utils';
 
-export function hello() {
-    console.log("hello, world");
-}
 
 /**
  * **创建着色器**
@@ -129,10 +126,11 @@ function clearColor(ctx) {
 }
 
 /**
- * **绘制多个点**
+ * **绘制不同图型**
  * @param {*} ctx 
  */
 export function drawMultiPoints(ctx) {
+    // 获取着色器
     let [VSHADER_SOURCE, FSHADER_SOURCE] = createdShader()
     if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders')
