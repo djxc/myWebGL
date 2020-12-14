@@ -1,8 +1,3 @@
-import { manualDrawPoints, drawMultiPoints } from './drawPoints';
-import { getWebGLContext, initShaders } from './lib/cuon-utils';
-
-
-
 /**
  * @FileDescription 学习webgl
  * webgl利用canvas作为基础绘制三维图型，没有webgl，canvas只能绘制二维图形；
@@ -12,6 +7,9 @@ import { getWebGLContext, initShaders } from './lib/cuon-utils';
  * @LastEditor small dj
  * @LastEditTime 2020-11-21 11:12
  */
+
+import { manualDrawPoints, drawMultiPoints } from './drawPoints';
+import { getWebGLContext, initShaders } from './lib/cuon-utils';
 
 var ctx;		// 定义画布上下文的全局变量
 main()
