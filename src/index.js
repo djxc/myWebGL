@@ -48,6 +48,7 @@ function testCanvas(canvas) {
  */
 function testWebGL(canvas) {
     // 获取上下文，在上下文中绘制三维图形，这里采用包装好的函数
+    // 获取webgl上下文可以采用简单的方法`gl = canvas.getContext("webgl");`为了应对不同浏览器差异采用封装好的函数
     ctx = getWebGLContext(canvas)
     if (!ctx) {
         console.log('Failed to get the rendering context for WebGL')

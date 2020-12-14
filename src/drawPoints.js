@@ -11,7 +11,9 @@ import { initShaders } from './lib/cuon-utils';
 
 
 /**
- * **创建着色器**
+ * **创建着色器**  
+ * 1、这里的着色器采用字符串的形式编写
+ * @return string[]
  */
 function createdShader() {
     // 定点着色器
@@ -132,6 +134,7 @@ function clearColor(ctx) {
 export function drawMultiPoints(ctx) {
     // 获取着色器
     let [VSHADER_SOURCE, FSHADER_SOURCE] = createdShader()
+    // 初始化着色器，在webgl中创建program，将着色器程序加载并且编译，即可在显卡中运行
     if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders')
         return
