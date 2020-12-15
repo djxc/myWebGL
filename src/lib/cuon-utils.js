@@ -23,6 +23,9 @@ function initShaders(gl, vshader, fshader) {
 
 /**
  * Create the linked program object
+ * 1、创建并且编译着色器
+ * 2、创建webgl程序，将创建的着色器关联到程序中
+ * 3、连接程序
  * @param gl GL context
  * @param vshader a vertex shader program (string)
  * @param fshader a fragment shader program (string)
@@ -64,6 +67,7 @@ function createProgram(gl, vshader, fshader) {
 
 /**
  * Create a shader object
+ * 创建着色器并将在源码然后进行编译
  * @param gl GL context
  * @param type the type of the shader object to be created
  * @param source shader program (string)
@@ -97,6 +101,7 @@ function loadShader(gl, type, source) {
 
 /** 
  * Initialize and get the rendering for WebGL
+ * 1、获取webgl上下文
  * @param canvas <cavnas> element
  * @param opt_debug flag to initialize the context for debugging
  * @return the rendering context for WebGL

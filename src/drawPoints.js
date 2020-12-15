@@ -111,8 +111,9 @@ function initVertexBuffers(gl) {
         console.log('Failed to create the buffer object');
         return -1;
     }
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);       // 绑定缓冲区到ARRAY_BUFFER
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);                   // 绑定缓冲区到ARRAY_BUFFER
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);       // 向缓冲区写入数据(即为将数据写入ARRAY_BUFFER)
+    
     // 获取着色器中的变量，然后将缓冲区分配给着色器变量
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);   // 2表示每个点个数据个数，这里为xy坐标，每个点只有两个数据
@@ -128,7 +129,15 @@ function clearColor(ctx) {
 }
 
 /**
- * **绘制不同图型**
+ * **绘制不同图型**  
+ * 1、创建图形的步骤为：  
+ *     1) 获取webgl上下文  
+ *     2) 创建着色器(着色器的创建与编译、program的创建与着色器的关联)  
+ *     3) 清空画布  
+ *     4) 采用drawArrays进行绘制，drawArray可以绘制不同的形状。   
+ * 2、如果在着色器中没有规定图形的位置与颜色，而是通过js传送参数过去的，
+ * 需要在webgl创建缓冲区，然后将js中声明的变量填充到该缓冲器，这一步涉及到js与显卡的数据传输会很耗时。
+ * 尽量减少内存与显存的数据传输，提高程序运行速度。
  * @param {*} ctx 
  */
 export function drawMultiPoints(ctx) {
@@ -139,6 +148,7 @@ export function drawMultiPoints(ctx) {
         console.log('Failed to initialize shaders')
         return
     }
+    // 创建缓冲区并将js中的变量填充到该缓冲区中
     let n = initVertexBuffers(ctx)
     if (n < 0) {
         console.log("sorry to draw");
@@ -153,7 +163,7 @@ export function drawMultiPoints(ctx) {
         return
     }
     ctx.vertexAttrib1f(a_PointSize, 8.0);
-    ctx.uniform4f(u_FragColor, 0.3, 0.5, 0.6, 0.78);
+    ctx.uniform4f(u_FragColor, 0.8, 0.5, 0.6, 0.78);
     clearColor(ctx)
     // 第一个参数为绘制的类型，这里为点；第二个参数为从第几个点开始绘制；第二个参数为为绘制点的个数
     // ctx.drawArrays(ctx.POINTS, 1, 1)
