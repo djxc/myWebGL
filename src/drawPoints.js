@@ -128,7 +128,15 @@ function clearColor(ctx) {
 }
 
 /**
- * **绘制不同图型**
+ * **绘制不同图型**  
+ * 1、创建图形的步骤为：  
+ *     1) 获取webgl上下文  
+ *     2) 创建着色器(着色器的创建与编译、program的创建与着色器的关联)  
+ *     3) 清空画布  
+ *     4) 采用drawArrays进行绘制，drawArray可以绘制不同的形状。   
+ * 2、如果在着色器中没有规定图形的位置与颜色，而是通过js传送参数过去的，
+ * 需要在webgl创建缓冲区，然后将js中声明的变量填充到该缓冲器，这一步涉及到js与显卡的数据传输会很耗时。
+ * 尽量减少内存与显存的数据传输，提高程序运行速度。
  * @param {*} ctx 
  */
 export function drawMultiPoints(ctx) {
@@ -139,6 +147,7 @@ export function drawMultiPoints(ctx) {
         console.log('Failed to initialize shaders')
         return
     }
+    // 创建缓冲区并将js中的变量填充到该缓冲区中
     let n = initVertexBuffers(ctx)
     if (n < 0) {
         console.log("sorry to draw");
