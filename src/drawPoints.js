@@ -33,27 +33,45 @@ function createdShader() {
         '}\n'
     return [VSHADER_SOURCE, FSHADER_SOURCE]
 }
+
+/**
+ * **获取着色器中的参数**  
+ * 1、以闭包的形式获取着色器中的参数地址  
+ * 2、参数地址为闭包的全局变量不会污染其他函数，而且只创建一次
+ */
+function getParamInShader() {
+    let a_Position, a_PointSize, u_FragColor
+    return (ctx) => {
+        if (!a_Position) {
+            // 获取着色器
+            let [VSHADER_SOURCE, FSHADER_SOURCE] = createdShader()
+            if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
+                console.log('Failed to initialize shaders')
+                return
+            }
+            // 获取着色器中的变量地址
+            a_Position = ctx.getAttribLocation(ctx.program, 'a_Position');
+            a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
+            u_FragColor = ctx.getUniformLocation(ctx.program, 'u_FragColor');
+        }
+        return [a_Position, a_PointSize, u_FragColor]
+    }
+}
+
 /**
  * **根据输入点的位置与大小绘制点**
  * @param {*} ctx webgl上下文
  * @param {float[]} point_position 点坐标
  * @param {float} point_size 点大小，浮点型
  */
-function draw_point(ctx, point_position, point_size) {  
-    // 获取着色器
-    let [VSHADER_SOURCE, FSHADER_SOURCE] = createdShader()
-    if (!initShaders(ctx, VSHADER_SOURCE, FSHADER_SOURCE)) {
-        console.log('Failed to initialize shaders')
-        return
-    }
-    var a_Position = ctx.getAttribLocation(ctx.program, 'a_Position');
-    var a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
-    var u_FragColor = ctx.getUniformLocation(ctx.program, 'u_FragColor');
-
+function draw_point(ctx, point_position, point_size, getParam) {
+    // 获取着色器中参数的地址
+    let [a_Position, a_PointSize, u_FragColor] = getParam(ctx)
     if (a_Position < 0 || a_PointSize < 0) {
         console.log("Failed to get the storage location of a_Position");
         return
     }
+    // 通过着色器变量地址向着色器传值
     ctx.vertexAttrib3f(a_Position, point_position[0], point_position[1], point_position[2]);
     ctx.vertexAttrib1f(a_PointSize, point_size);
     ctx.uniform4f(u_FragColor, 0.2, 0.5, 0.6, 0.78);
@@ -63,11 +81,13 @@ function draw_point(ctx, point_position, point_size) {
 
 /**
  * **手动绘制点**  
- * 1、首先注册canvas点击事件，获取点的点的坐标，然后触发绘制点函数
+ * 1、首先注册canvas点击事件，获取点的点的坐标，然后触发绘制点函数  
+ * 2、绘制点需要webgl对象以及点位置与大小
  * @param {*} canvas 
  * @param {*} ctx 
  */
 export function manualDrawPoints(canvas, ctx) {
+    let getParam = getParamInShader()
     canvas.onmousedown = function (ev) {
         // 鼠标点的位置
         let x = ev.clientX
@@ -77,7 +97,7 @@ export function manualDrawPoints(canvas, ctx) {
         let x_ = ((x - rect.left) - canvas.height / 2) / (canvas.height / 2);
         let y_ = (rect.width / 2 - (y - rect.top)) / (canvas.width / 2);
         console.log("djxc", ev.target, x, y, rect, [x_, y_])
-        draw_point(ctx, [x_, y_, 0.0], 5.0)
+        draw_point(ctx, [x_, y_, 0.0], 5.0, getParam)
     }
 }
 
@@ -104,9 +124,9 @@ function initVertexBuffers(gl) {
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);                           // 绑定缓冲区到ARRAY_BUFFER
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);               // 向缓冲区写入数据(即为将数据写入ARRAY_BUFFER)
-    
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');        // 获取着色器中的变量，然后将缓冲区分配给着色器变量
-    var a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');      // 获取着色器中的顶点大小变量
+
+    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');        // 获取着色器中的变量地址，然后将缓冲区分配给着色器变量
+    var a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');      // 获取着色器中的顶点大小变量地址
     // 如果获取着色器中的变量失败，给出提示
     if (a_PointSize < 0 || a_Position < 0) {
         console.log("Failed to get the storage location of a_Position or a_PointSize");
@@ -115,7 +135,7 @@ function initVertexBuffers(gl) {
 
     gl.vertexAttrib1f(a_PointSize, 8.0);                                    // 给缓冲区的点大小变量赋值
     // 给缓冲区内的点数组赋值，2表示每个点个数据个数，这里为xy坐标，每个点只有两个数据
-    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);           
+    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_Position);
 
     return n;
@@ -135,8 +155,10 @@ function clearColor(ctx) {
  *     3) 清空画布  
  *     4) 采用drawArrays进行绘制，drawArray可以绘制不同的形状。   
  * 2、如果在着色器中没有规定图形的位置与颜色，而是通过js传送参数过去的，
- * 需要在webgl创建缓冲区，然后将js中声明的变量填充到该缓冲器，这一步涉及到js与显卡的数据传输会很耗时。
- * 尽量减少内存与显存的数据传输，提高程序运行速度。
+ * 需要在webgl创建缓冲区，然后将js中声明的变量填充到该缓冲器，这一步涉
+ * 及到js与显卡的数据传输会很耗时尽量减少内存与显存的数据传输，提高程序运行速度。
+ * 3、js与着色器之间数据传输包括attribute以及uniform，其中Attribute适用于
+ * 顶点的传输，uniform适用于所有顶点都相同的数据或是与顶点无关的数据
  * @param {*} ctx 
  */
 export function drawMultiPoints(ctx) {

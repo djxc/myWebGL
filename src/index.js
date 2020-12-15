@@ -56,8 +56,8 @@ function testWebGL(canvas) {
     }
     // clearColor()
     // drawPoint2(ctx)
-    // manualDrawPoints(canvas, ctx)
-    drawMultiPoints(ctx)
+    manualDrawPoints(canvas, ctx)
+    // drawMultiPoints(ctx)
 }
 
 // 利用canvas绘制一个矩形
