@@ -64,7 +64,7 @@ function getParamInShader() {
  * @param {float[]} point_position 点坐标
  * @param {float} point_size 点大小，浮点型
  */
-function draw_point(ctx, point_position, point_size, getParam) {
+function draw_point(ctx, point_positions, point_size, colors, getParam) {
     // 获取着色器中参数的地址
     let [a_Position, a_PointSize, u_FragColor] = getParam(ctx)
     if (a_Position < 0 || a_PointSize < 0) {
@@ -72,11 +72,14 @@ function draw_point(ctx, point_position, point_size, getParam) {
         return
     }
     // 通过着色器变量地址向着色器传值
-    ctx.vertexAttrib3f(a_Position, point_position[0], point_position[1], point_position[2]);
     ctx.vertexAttrib1f(a_PointSize, point_size);
-    ctx.uniform4f(u_FragColor, 0.2, 0.5, 0.6, 0.78);
-    // clearColor()
-    ctx.drawArrays(ctx.POINTS, 0, 1)
+    for (let i = 0; i < point_positions.length; i += 1) {
+        let color = colors[i]
+        let point_position = point_positions[i]
+        ctx.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
+        ctx.vertexAttrib3f(a_Position, point_position[0], point_position[1], 0);
+        ctx.drawArrays(ctx.POINTS, 0, 1)        
+    }
 }
 
 /**
@@ -88,6 +91,8 @@ function draw_point(ctx, point_position, point_size, getParam) {
  */
 export function manualDrawPoints(canvas, ctx) {
     let getParam = getParamInShader()
+    let points = []
+    let color = []
     canvas.onmousedown = function (ev) {
         // 鼠标点的位置
         let x = ev.clientX
@@ -96,8 +101,20 @@ export function manualDrawPoints(canvas, ctx) {
         let rect = ev.target.getBoundingClientRect()
         let x_ = ((x - rect.left) - canvas.height / 2) / (canvas.height / 2);
         let y_ = (rect.width / 2 - (y - rect.top)) / (canvas.width / 2);
-        console.log("djxc", ev.target, x, y, rect, [x_, y_])
-        draw_point(ctx, [x_, y_, 0.0], 5.0, getParam)
+        if (x_ >= 0.0 && y_ >= 0.0) {
+            color.push([0.8, 0.0, 0.0, 1.0])
+        }
+        if (x_ >= 0.0 && y_ < 0.0) {
+            color.push([0.0, 0.8, 0.0, 1.0])
+        }
+        if (x_ < 0.0 && y_ >= 0.0) {
+            color.push([0.0, 0.0, 0.7, 1.0])
+        }
+        if (x_ < 0.0 && y_ < 0.0) {
+            color.push([0.8, 0.2, 0.4, 1.0])
+        }
+        points.push([x_, y_]);
+        draw_point(ctx, points, 5.0, color, getParam)
     }
 }
 

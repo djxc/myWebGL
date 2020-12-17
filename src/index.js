@@ -9,8 +9,9 @@
  */
 
 import { manualDrawPoints, drawMultiPoints } from './drawPoints';
+import { createButton } from './js/djReact';
 import { getWebGLContext, initShaders } from './lib/cuon-utils';
-
+import Student from './js/test.ts';
 var ctx;		// 定义画布上下文的全局变量
 main()
 
@@ -27,6 +28,9 @@ function main() {
         return
     }
     testWebGL(canvas)
+    createButton()
+    let student = new Student("dj")
+    student.gotoSchool()
     // testCanvas(canvas)
 }
 
