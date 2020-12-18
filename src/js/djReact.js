@@ -1,15 +1,30 @@
-import React from '../react/dReact'
-import DReactDom from '../react/render';
-export function createButton() {
-    let button = document.createElement("button")
-    button.innerHTML = "dianji";
-    
+import React, {useState} from '../react/dReact'
+import DReactDom, { reRender } from '../react/render';
+
+function Home() {
+    const [name, setName] = useState("dj");
+    return (
+        <div>
+            <h2>this is home, {name}</h2>
+            <button onClick={showTime}>主页</button>
+        </div>
+    )
+
+    function showTime() {
+        // 修改state，重新渲染。state需要为全局变量
+        setName("djxc")
+        // let root = document.getElementById("root");
+        // reRender("", root)
+        // createButton()
+    }
+}
+
+export function createButton() {   
     let root = document.getElementById("root");
-    root.appendChild(button);
     let btn = <div id="reactDIV">
         name
-        <button id="btn">dj</button> 
+        <Home></Home>
     </div>
-    console.log(btn);
     DReactDom.renderer(btn, root);
+   
 }

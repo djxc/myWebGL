@@ -71,7 +71,7 @@ function draw_point(ctx, point_positions, point_size, colors, getParam) {
         console.log("Failed to get the storage location of a_Position");
         return
     }
-    // 通过着色器变量地址向着色器传值
+    // 通过着色器变量地址向着色器传值，这种方法每次只能绘制一个点
     ctx.vertexAttrib1f(a_PointSize, point_size);
     for (let i = 0; i < point_positions.length; i += 1) {
         let color = colors[i]
@@ -153,6 +153,7 @@ function initVertexBuffers(gl) {
     gl.vertexAttrib1f(a_PointSize, 8.0);                                    // 给缓冲区的点大小变量赋值
     // 给缓冲区内的点数组赋值，2表示每个点个数据个数，这里为xy坐标，每个点只有两个数据
     gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+    
     gl.enableVertexAttribArray(a_Position);
 
     return n;
